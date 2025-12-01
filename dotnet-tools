@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Cross-shell wrapper for Git Bash/WSL bash on Windows.
+# Calls PowerShell command scripts directly.
+
+usage() {
+  cat <<'USAGE'
+Usage: dotnet-tools <command> [args]
+
+Commands:
+  build  - Build a solution
+  bump   - Bump csproj <Version>
+  clean  - Clean bin/ and obj/
+  tag    - Create/push git tag from csproj version
+  test   - Run tests and generate coverage
+USAGE
+}
+
+cmd="${1:-}" || true
+if [[ -z "${cmd}" || "${cmd}" == "-h" || "${cmd}" == "--help" || "${cmd}" == "help" ]]; then
+  usage
+  exit 1
+fi
+shift || true
+
+# Resolve this script's directory
+SCRIPT_PATH="${BASH_SOURCE[0]:-$0}"
+DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
+
+# Convert to a Windows path if we're in WSL or Git Bash
+WIN_DIR="$DIR"
+if command -v wslpath >/dev/null 2>&1; then
+  WIN_DIR="$(wslpath -w "$DIR")"
+else
+  # Git Bash (MSYS2) supports 'pwd -W' for Windows-style path
+  if (cd "$DIR" && pwd -W) >/dev/null 2>&1; then
+    WIN_DIR="$(cd "$DIR" && pwd -W)"
+  fi
+fi
+
+# Prefer Windows PowerShell if available, otherwise PowerShell 7 (pwsh)
+PS1_WIN="$WIN_DIR\\commands\\${cmd}.ps1"
+PS1_POSIX="$DIR/commands/${cmd}.ps1"
+
+if command -v powershell.exe >/dev/null 2>&1; then
+  exec powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$PS1_WIN" "$@"
+elif command -v pwsh >/dev/null 2>&1; then
+  exec pwsh -NoProfile -ExecutionPolicy Bypass -File "$PS1_POSIX" "$@"
+else
+  echo "[ERROR] Neither powershell.exe nor pwsh found on PATH." 1>&2
+  exit 1
+fi
