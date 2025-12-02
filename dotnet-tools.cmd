@@ -16,6 +16,9 @@ if /I "%SUB%"=="test"   goto :do_test
 if /I "%SUB%"=="init-lib"   goto :do_init_lib
 if /I "%SUB%"=="init-min"   goto :do_init_min
 if /I "%SUB%"=="init-proj"   goto :do_init_proj
+if /I "%SUB%"=="cmd-test-all"   goto :do_cmd_test_all
+if /I "%SUB%"=="cmd-test-lib"   goto :do_cmd_test_lib
+if /I "%SUB%"=="cmd-test-min"   goto :do_cmd_test_min
 
 echo [ERROR] Unknown command: %SUB%
 goto :usage
@@ -52,6 +55,18 @@ exit /b %ERRORLEVEL%
 powershell -NoProfile -ExecutionPolicy Bypass -File "%SELF_DIR%commands\init-proj.ps1" %*
 exit /b %ERRORLEVEL%
 
+:do_cmd_test_all
+powershell -NoProfile -ExecutionPolicy Bypass -File "%SELF_DIR%tests\run.ps1" -Suite cmd-test-all -VerboseOutput
+exit /b %ERRORLEVEL%
+
+:do_cmd_test_lib
+powershell -NoProfile -ExecutionPolicy Bypass -File "%SELF_DIR%tests\run.ps1" -Suite cmd-test-lib -VerboseOutput
+exit /b %ERRORLEVEL%
+
+:do_cmd_test_min
+powershell -NoProfile -ExecutionPolicy Bypass -File "%SELF_DIR%tests\run.ps1" -Suite cmd-test-min -VerboseOutput
+exit /b %ERRORLEVEL%
+
 :usage
 echo Usage: dotnet-tools ^<command^> [args]
 echo.
@@ -64,4 +79,7 @@ echo   test   ^- Run tests and generate coverage. Example: dotnet-tools test [te
 echo   init-lib ^- Scaffold new library repo. Example: dotnet-tools init-lib MyLib --author "Jane Doe" --description "My library" --version 0.1.0
 echo   init-min ^- Scaffold minimal repo (no NuGet metadata; tests/.gitkeep). Example: dotnet-tools init-min --root MyLib --solution MyLib --project MyLib --author "Jane Doe" --description "My library"
 echo   init-proj ^- Scaffold single project (--min|--nuget). Example: dotnet-tools init-proj --name MyProj --nuget
+echo   cmd-test-all ^- Run both CMD suites
+echo   cmd-test-lib ^- Run CMD suite with init-lib
+echo   cmd-test-min ^- Run CMD suite without init-lib
 exit /b 1

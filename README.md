@@ -175,6 +175,61 @@ If `powershell.exe` is available (on WSL), the wrapper prefers it; otherwise it 
 - `init-min`: Scaffold a minimal library repo: same folders and top-level files as `init`, but creates a minimal class library `.csproj` without any NuGet packaging metadata and does not create a test project (adds `tests/.gitkeep`).
 - `init-proj`: Scaffold a single project folder choosing between minimal (`--min` default) or NuGet template (`--nuget` blanks metadata values but keeps tags present).
 
+## Test Suite
+
+End-to-end tests are orchestrated by `tests/run.ps1` and exercised via entrypoint commands. They scaffold temporary mock projects, run the toolchain (init/build/bump/tag/test/clean), and print a concise summary.
+
+### How To Run
+
+```powershell
+# Windows (CMD/PowerShell wrapper)
+dotnet-tools cmd-test-all      # run both CMD suites
+dotnet-tools cmd-test-lib      # only init-lib suite (CMD)
+dotnet-tools cmd-test-min      # only init-min suite (CMD)
+
+# Bash wrapper (Git Bash/WSL/Linux)
+./dotnet-tools bash-test-all   # run both Bash suites
+./dotnet-tools bash-test-lib   # only init-lib suite (Bash)
+./dotnet-tools bash-test-min   # only init-min suite (Bash)
+```
+
+### What It Verifies
+
+- init: `init-lib` (NuGet metadata project) and `init-min` (minimal project)
+- build: builds the generated solution under `src/`
+- bump: updates `<Version>` in `.csproj`
+  - init-lib: `--patch`
+  - init-min: sets an explicit initial version (e.g., `0.1.0`)
+- tag: creates `v<Version>` git tag based on `.csproj`
+- test: runs tests and generates coverage (if ReportGenerator is installed)
+- clean: removes `bin/` and `obj/`
+
+### Logs And Summary
+
+- Each step logs with `[TEST]`, followed by `[SUCCESS]` or `[FAIL]` per command.
+- Final line shows: `[SUMMARY] <passed> of <total> tests passed`.
+
+### Mock Folder Behavior
+
+- Location: `tests/mock/<suite>/...`
+- Cleanup:
+  - Always cleaned before a run starts.
+  - For `*-test-all`, the first suite cleans the mock root; subsequent suites in the same run do not clean again so both mock projects remain.
+  - For single-suite runs (`*-test-lib` or `*-test-min`), the mock root is cleaned before that suite.
+
+### Git Safety
+
+- Tests initialize a nested git repo under each mock project and scope all git commands with `git -C <repoRoot>`.
+- A safety check aborts if `git rev-parse --show-toplevel` is outside `tests/mock`.
+- Line-ending warnings are suppressed locally via repo config (`core.autocrlf=false`, `core.safecrlf=false`).
+
+### Prerequisites For Tests
+
+- `dotnet` SDK installed.
+- `git` available on PATH.
+- Coverage (optional): `dotnet tool install -g dotnet-reportgenerator-globaltool`.
+- For Bash suites: Git Bash/WSL/Linux environment capable of invoking PowerShell (`powershell.exe` or `pwsh`).
+
 ### `init-lib` Command Details
 
 Scaffolds a new repository structure for a class library.
@@ -194,7 +249,7 @@ Parameters:
 - `--project`: Project name (default: JSON `ProjectName` or `--solution`).
 - `--author`: NuGet `Authors` (default: JSON `Author` or environment user).
 - `--company`: NuGet `Company` (default: JSON `Company` or `--author`).
-- `--description`: NuGet description (default: JSON `Description` or "<Project> library").
+- `--description`: NuGet description (default: JSON `Description` or "\<Project\> library").
 - `--version`: Initial `<Version>` (default: JSON `Version` or 0.1.0).
 - `--packageId`: NuGet `PackageId` (default: JSON `PackageId` or `--project`).
 - `--repositoryUrl`: NuGet `RepositoryUrl` (default: JSON `RepositoryUrl` or `git remote get-url origin` if available).

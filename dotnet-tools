@@ -17,6 +17,9 @@ Commands:
   init-lib - Scaffold new library repo (solution + project + files)
   init-min - Scaffold minimal repo (solution + project; no NuGet metadata; tests/.gitkeep)
   init-proj - Scaffold single project folder (--min|--nuget) default min
+  bash-test-all - Run both Bash suites
+  bash-test-lib - Run Bash suite with init-lib
+  bash-test-min - Run Bash suite without init-lib
 USAGE
 }
 
@@ -45,12 +48,28 @@ fi
 # Prefer Windows PowerShell if available, otherwise PowerShell 7 (pwsh)
 PS1_WIN="$WIN_DIR\\commands\\${cmd}.ps1"
 PS1_POSIX="$DIR/commands/${cmd}.ps1"
+RUN_TESTS_WIN="$WIN_DIR\\tests\\run.ps1"
+RUN_TESTS_POSIX="$DIR/tests/run.ps1"
 
-if command -v powershell.exe >/dev/null 2>&1; then
-  exec powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$PS1_WIN" "$@"
-elif command -v pwsh >/dev/null 2>&1; then
-  exec pwsh -NoProfile -ExecutionPolicy Bypass -File "$PS1_POSIX" "$@"
+if [[ "$cmd" == "bash-test-all" || "$cmd" == "bash-test-lib" || "$cmd" == "bash-test-min" ]]; then
+  suite_arg="bash-test-all"
+  if [[ "$cmd" == "bash-test-lib" ]]; then suite_arg="bash-test-lib"; fi
+  if [[ "$cmd" == "bash-test-min" ]]; then suite_arg="bash-test-min"; fi
+  if command -v powershell.exe >/dev/null 2>&1; then
+    exec powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$RUN_TESTS_WIN" -Suite "$suite_arg"
+  elif command -v pwsh >/dev/null 2>&1; then
+    exec pwsh -NoProfile -ExecutionPolicy Bypass -File "$RUN_TESTS_POSIX" -Suite "$suite_arg"
+  else
+    echo "[ERROR] Neither powershell.exe nor pwsh found on PATH." 1>&2
+    exit 1
+  fi
 else
-  echo "[ERROR] Neither powershell.exe nor pwsh found on PATH." 1>&2
-  exit 1
+  if command -v powershell.exe >/dev/null 2>&1; then
+    exec powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$PS1_WIN" "$@"
+  elif command -v pwsh >/dev/null 2>&1; then
+    exec pwsh -NoProfile -ExecutionPolicy Bypass -File "$PS1_POSIX" "$@"
+  else
+    echo "[ERROR] Neither powershell.exe nor pwsh found on PATH." 1>&2
+    exit 1
+  fi
 fi
