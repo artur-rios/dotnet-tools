@@ -14,6 +14,9 @@ Commands:
   clean  - Clean bin/ and obj/
   tag    - Create/push git tag from csproj version
   test   - Run tests and generate coverage
+  init-lib - Scaffold new library repo (solution + project + files)
+  init-min - Scaffold minimal repo (solution + project; no NuGet metadata; tests/.gitkeep)
+  init-proj - Scaffold single project folder (--min|--nuget) default min
 USAGE
 }
 
