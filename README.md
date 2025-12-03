@@ -8,19 +8,35 @@ These thin wrappers dispatch to PowerShell command scripts that live alongside t
 
 ```folder-structure
 dotnet-tools/
-├─ dotnet-tools           # Bash wrapper (Git Bash/WSL/Linux)
-├─ dotnet-tools.cmd       # Windows CMD/PowerShell wrapper
-├─ commands/              # PowerShell command scripts (the implementation)
+├─ dotnet-tools            # Bash wrapper (Git Bash/WSL/Linux)
+├─ dotnet-tools.cmd        # Windows CMD/PowerShell wrapper
+├─ commands/               # PowerShell command scripts (the implementation)
 │  ├─ build.ps1
 │  ├─ bump.ps1
 │  ├─ clean.ps1
-│  ├─ tag.ps1
-│  ├─ test.ps1
 │  ├─ init-lib.ps1
-│  └─ init-min.ps1
-└─ setup/                 # Install helpers to place wrappers on PATH
-  ├─ install.ps1
-  └─ install.sh
+│  ├─ init-min.ps1
+│  ├─ init-proj.ps1
+│  ├─ tag.ps1
+│  └─ test.ps1
+├─ parameters/             # Default parameters for init commands
+│  └─ init-parameters.json
+├─ setup/                  # Install helpers to place wrappers on PATH
+│  ├─ install.ps1
+│  └─ install.sh
+├─ templates/              # Scaffolding templates used by init commands
+│  ├─ LICENSE.MIT.template
+│  ├─ project.minimal.csproj.template
+│  ├─ project.nuget.csproj.template
+│  ├─ project.Tests.csproj.template
+│  └─ solution.sln.template
+└─ tests/                  # E2E test harness and mock projects
+  ├─ run.ps1
+  └─ mock/
+    ├─ cmd-test-lib/
+    │  └─ MyLibCmd/ ...
+    └─ cmd-test-min/
+      └─ MyProjCmd/ ...
 ```
 
 - The wrappers must stay sibling to the `commands/` folder; they resolve scripts by relative path.
@@ -92,8 +108,7 @@ Run from the repo root:
 
 ```bash
 chmod +x ./setup/install.sh
-./setup/install.sh                  # auto-picks a writable PATH dir or ~/.local/bin
-# or specify a target directory explicitly
+./setup/install.sh                  # auto-picks a writable PATH dir or ~/.local/bin or specify a target directory explicitly
 ./setup/install.sh /usr/local/bin   # may require: sudo ./setup/install.sh /usr/local/bin
 ```
 
@@ -110,14 +125,14 @@ Important: `dotnet-tools`/`dotnet-tools.cmd` and `commands/` must live together 
 - Add for the current session only:
 
 ```powershell
-$p = 'D:\\Repositories\\bat-dotnet-tools'
+$p = 'D:\\Repositories\\dotnet-tools'
 $env:Path = "$env:Path;$p"
 ```
 
 - Persist for the current user (new shells will pick it up):
 
 ```powershell
-$p = 'D:\\Repositories\\bat-dotnet-tools'
+$p = 'D:\\Repositories\\dotnet-tools'
 $u = [Environment]::GetEnvironmentVariable('Path', 'User')
 if (-not $u.Split(';') -contains $p) {
   [Environment]::SetEnvironmentVariable('Path', ($u.TrimEnd(';') + ';' + $p), 'User')
@@ -131,10 +146,10 @@ Then open a new PowerShell/CMD and run e.g. `dotnet-tools build`.
 Git Bash can call the same `dotnet-tools` wrapper. Ensure the repo folder is in `PATH` within your bash profile.
 
 ```bash
-echo 'export PATH="$PATH:/d/Repositories/bat-dotnet-tools"' >> ~/.bashrc
+echo 'export PATH="$PATH:/d/Repositories/dotnet-tools"' >> ~/.bashrc
 source ~/.bashrc
 # Optional: ensure executable bit is set for the bash wrapper
-chmod +x /d/Repositories/bat-dotnet-tools/dotnet-tools
+chmod +x /d/Repositories/dotnet-tools/dotnet-tools
 ```
 
 ### Linux / WSL
@@ -145,14 +160,14 @@ If you’re on Linux or WSL with PowerShell 7 (`pwsh`) installed, the bash wrapp
 # Example: clone into ~/.local/share/dotnet-tools
 mkdir -p ~/.local/share
 cd ~/.local/share
-git clone https://example.com/your/bat-dotnet-tools.git
+git clone https://example.com/your/dotnet-tools.git
 
 # Add to PATH via profile (adjust path as needed)
-echo 'export PATH="$PATH:$HOME/.local/share/bat-dotnet-tools"' >> ~/.bashrc
+echo 'export PATH="$PATH:$HOME/.local/share/dotnet-tools"' >> ~/.bashrc
 source ~/.bashrc
 
 # Ensure the bash wrapper is executable
-chmod +x "$HOME/.local/share/bat-dotnet-tools/dotnet-tools"
+chmod +x "$HOME/.local/share/dotnet-tools/dotnet-tools"
 ```
 
 If `powershell.exe` is available (on WSL), the wrapper prefers it; otherwise it falls back to `pwsh`.
@@ -285,9 +300,10 @@ NuGet metadata added to `<Project>.csproj`:
 
 Templates:
 
-- `.editorconfig` and `.gitignore` are copied exclusively from `templates/.editorconfig.template` and `templates/.gitignore.template`.
 - `LICENSE` (MIT) is rendered from `templates/LICENSE.MIT.template` with current year and author.
-- Solution and project are rendered from `templates/solution.sln.template` and `templates/project.nuget.csproj.template` with placeholders replaced.
+- Solution is rendered from `templates/solution.sln.template`.
+- Project is rendered from either `templates/project.nuget.csproj.template` (NuGet metadata) or `templates/project.minimal.csproj.template` (minimal).
+- Test project (when applicable) is rendered from `templates/project.Tests.csproj.template`.
 
 ### `init-min` Command Details
 
@@ -305,3 +321,7 @@ Behavior and notes:
 - Uses the same parameter resolution rules as `init-lib`. If `--json` is provided, do not mix it with flags. Only a minimal subset of JSON keys is required: `RootFolder`, `SolutionName`, `ProjectName`, `Author`, `Description`.
 - Generates: `.editorconfig`, `.gitignore`, `.wakatime-project`, `LICENSE` (MIT), `README.md`, `src/<Solution>.sln`, `src/<Project>.csproj` (minimal), `docs/.gitkeep`, `tests/.gitkeep`.
 - Templates used: `templates/solution.sln.template` and `templates/project.minimal.csproj.template`.
+
+## Legal Details
+
+This project is licensed under the [MIT License](https://en.wikipedia.org/wiki/MIT_License). A copy of the license is available at [LICENSE](./LICENSE) in the repository.
