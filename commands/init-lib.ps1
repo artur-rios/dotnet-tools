@@ -160,17 +160,20 @@ Log '[OK] Created directories: src, docs, tests'
 Set-Content -Path (Join-Path $RootFull '.wakatime-project') -Value $Project -Encoding UTF8
 Log '[INFO] Wrote .wakatime-project'
 
-# README.md (still inline; templates govern other files)
-$readme = "# $Solution`n`n$Description`n"
-Log '[STEP] 5/9 Generate README'
-Set-Content -Path (Join-Path $RootFull 'README.md') -Value $readme -Encoding UTF8
-Log '[OK] README created'
-
-# Use templates for solution, project, license (no inline generation for those)
+# Render README.md from template
+Log '[STEP] 5/9 Generate README from template'
 $templateBaseRoot = Join-Path -Path $PSScriptRoot -ChildPath '..'
 $templateBase = Join-Path -Path $templateBaseRoot -ChildPath 'templates'
-Log '[STEP] 3/9 Validate templates'
 try { $templateBase = (Resolve-Path -LiteralPath $templateBase -ErrorAction Stop).Path } catch { ErrorExit "Templates folder not found: $templateBase" }
+$tplReadme = Join-Path $templateBase 'README.md.template'
+if (-not (Test-Path -LiteralPath $tplReadme)) { ErrorExit "Missing required template: README.md.template" }
+$readmeTemplate = (Get-Content -LiteralPath $tplReadme -Raw)
+$readmeRendered = $readmeTemplate.Replace('__SOLUTION_NAME__', $Solution).Replace('__PROJECT_NAME__', $Project).Replace('__DESCRIPTION__', $Description).Replace('__AUTHOR__', $Author)
+Set-Content -Path (Join-Path $RootFull 'README.md') -Value $readmeRendered -Encoding UTF8
+Log '[OK] README created from template'
+
+# Use templates for solution, project, license (no inline generation for those)
+Log '[STEP] 3/9 Validate templates'
 
 # Validate required template files
 $tplEditor = Join-Path $templateBase '.editorconfig.template'
