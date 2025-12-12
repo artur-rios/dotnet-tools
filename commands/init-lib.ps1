@@ -2,7 +2,7 @@
 .SYNOPSIS
   Scaffold a new .NET library repository structure.
 .DESCRIPTION
-  Creates a root folder (by name/path) with src, docs, tests; generates .editorconfig, .gitignore,
+  Creates a root folder (by name/path) with src, tests; generates .editorconfig, .gitignore,
   .wakatime-project, LICENSE (MIT), README.md; creates solution + class library project with NuGet metadata.
 
 .USAGE
@@ -150,11 +150,9 @@ Log "[INFO] description: $Description"
 Log '[STEP] 2/9 Create directory structure'
 New-Item -ItemType Directory -Path $RootFull | Out-Null
 $srcDir = Join-Path $RootFull 'src'
-$docsDir = Join-Path $RootFull 'docs'
 $testsDir = Join-Path $RootFull 'tests'
-New-Item -ItemType Directory -Path $srcDir, $docsDir, $testsDir | Out-Null
-Set-Content -Path (Join-Path $docsDir '.gitkeep') -Value '' -Encoding UTF8
-Log '[OK] Created directories: src, docs, tests'
+New-Item -ItemType Directory -Path $srcDir, $testsDir | Out-Null
+Log '[OK] Created directories: src, tests'
 
 # .wakatime-project
 Set-Content -Path (Join-Path $RootFull '.wakatime-project') -Value $Project -Encoding UTF8
@@ -168,6 +166,16 @@ try { $templateBase = (Resolve-Path -LiteralPath $templateBase -ErrorAction Stop
 $tplReadme = Join-Path $templateBase 'README.md.template'
 if (-not (Test-Path -LiteralPath $tplReadme)) { ErrorExit "Missing required template: README.md.template" }
 $readmeTemplate = (Get-Content -LiteralPath $tplReadme -Raw)
+# Add versioning section after description
+$versioningSection = @"
+
+
+## Versioning
+
+Semantic Versioning (SemVer). Breaking changes result in a new major version. New methods or non-breaking behavior
+changes increment the minor version; fixes or tweaks increment the patch.
+"@
+$readmeTemplate = $readmeTemplate.Replace('__DESCRIPTION__', "__DESCRIPTION__$versioningSection")
 $readmeRendered = $readmeTemplate.Replace('__SOLUTION_NAME__', $Solution).Replace('__PROJECT_NAME__', $Project).Replace('__DESCRIPTION__', $Description).Replace('__AUTHOR__', $Author)
 Set-Content -Path (Join-Path $RootFull 'README.md') -Value $readmeRendered -Encoding UTF8
 Log '[OK] README created from template'

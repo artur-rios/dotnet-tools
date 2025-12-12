@@ -291,7 +291,6 @@ Generated structure:
     <Project>/
       <Project>.csproj  # With NuGet metadata
       README.md          # Copied for NuGet packaging
-  docs/
   tests/
 ```
 

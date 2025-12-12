@@ -2,7 +2,7 @@
 .SYNOPSIS
   Scaffold a minimal .NET library repository (no NuGet metadata, no test project).
 .DESCRIPTION
-  Creates a root folder (by name/path) with src, docs, tests; generates .editorconfig, .gitignore,
+  Creates a root folder (by name/path) with src, tests; generates .editorconfig, .gitignore,
   .wakatime-project, LICENSE (MIT), README.md; creates solution + minimal class library project
   with no NuGet packaging metadata. Tests folder contains only a .gitkeep.
 
@@ -132,12 +132,10 @@ Log "[INFO] description: $Description"
 Log '[STEP] 2/7 Create directory structure'
 New-Item -ItemType Directory -Path $RootFull | Out-Null
 $srcDir = Join-Path $RootFull 'src'
-$docsDir = Join-Path $RootFull 'docs'
 $testsDir = Join-Path $RootFull 'tests'
-New-Item -ItemType Directory -Path $srcDir, $docsDir, $testsDir | Out-Null
-Set-Content -Path (Join-Path $docsDir '.gitkeep') -Value '' -Encoding UTF8
+New-Item -ItemType Directory -Path $srcDir, $testsDir | Out-Null
 Set-Content -Path (Join-Path $testsDir '.gitkeep') -Value '' -Encoding UTF8
-Log '[OK] Created directories: src, docs, tests (with .gitkeep)'
+Log '[OK] Created directories: src, tests (with .gitkeep)'
 
 # .wakatime-project
 Set-Content -Path (Join-Path $RootFull '.wakatime-project') -Value $Project -Encoding UTF8
