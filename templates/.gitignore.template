@@ -474,3 +474,8 @@ $RECYCLE.BIN/
 # Doc generation
 Doxygen/
 *.asta.lock
+
+# Hugo build output
+/docs/public/
+/docs/resources/_gen/
+*.DS_Store
