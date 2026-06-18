@@ -233,11 +233,6 @@ if ($slnRendered.Contains($oldRelPath)) { $slnRendered = $slnRendered.Replace($o
 Set-Content -Path (Join-Path $srcDir "$Solution.sln") -Value $slnRendered -Encoding UTF8
 Log '[INFO] Solution file created'
 
-# Copy README next to project for NuGet packaging context
-Log '[STEP] 8/9 Copy README next to project'
-Copy-Item -Path (Join-Path $RootFull 'README.md') -Destination (Join-Path $srcDir 'README.md') -Force
-Log '[OK] README copied to src'
-
 # Create test project under tests
 Log '[STEP] 7/9 Generate test project'
 $tplProjTests = Join-Path $templateBase 'project.Tests.csproj.template'

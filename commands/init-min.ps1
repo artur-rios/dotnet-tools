@@ -194,10 +194,6 @@ $slnRendered = $slnTemplate.Replace('__PROJECT_NAME__', $Project).Replace('__PRO
 Set-Content -Path (Join-Path $srcDir "$Solution.sln") -Value $slnRendered -Encoding UTF8
 Log '[INFO] Solution file created'
 
-# Copy README next to project for convenience
-Copy-Item -Path (Join-Path $RootFull 'README.md') -Destination (Join-Path $srcDir 'README.md') -Force
-Log '[OK] README copied to src'
-
 Log '[STEP] 7/7 Done'
 Log "[INFO] Solution path: $srcDir\$Solution.sln"
 Log "[INFO] Project path:  $csprojPath"

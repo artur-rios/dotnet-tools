@@ -164,6 +164,10 @@ function Invoke-SuiteCmdLib {
 
     $okInit = Test-Path $csproj
     Assert-True -Condition $okInit -TestName 'init-lib creates project' -Details "$csproj exists"
+    $readmeRoot = Test-Path (Join-Path $root 'README.md')
+    $readmeSrc  = Test-Path (Join-Path $root 'src\README.md')
+    Assert-True -Condition $readmeRoot           -TestName 'init-lib creates root README.md'    -Details 'README.md present at root'
+    Assert-True -Condition (-not $readmeSrc)     -TestName 'init-lib no src README.md'          -Details 'README.md must not exist under src'
     Write-Message ($(if ($okInit) { '[SUCCESS] init-lib' } else { '[FAIL] init-lib' }))
 
     # build (target src so solution is found)
@@ -234,6 +238,10 @@ function Invoke-SuiteCmdMin {
     Initialize-GitRepo -RepoRoot $root
     $okInit = Test-Path $csproj
     Assert-True -Condition $okInit -TestName 'init-min creates project' -Details "$csproj exists"
+    $readmeRoot = Test-Path (Join-Path $root 'README.md')
+    $readmeSrc  = Test-Path (Join-Path $root 'src\README.md')
+    Assert-True -Condition $readmeRoot           -TestName 'init-min creates root README.md'    -Details 'README.md present at root'
+    Assert-True -Condition (-not $readmeSrc)     -TestName 'init-min no src README.md'          -Details 'README.md must not exist under src'
     Write-Message ($(if ($okInit) { '[SUCCESS] init-min' } else { '[FAIL] init-min' }))
 
     Write-Message '[TEST] Testing build'
@@ -296,6 +304,10 @@ function Invoke-SuiteBashLib {
 
     $okInit = Test-Path $csproj
     Assert-True -Condition $okInit -TestName 'init-lib (bash) creates project' -Details "$csproj exists"
+    $readmeRoot = Test-Path (Join-Path $root 'README.md')
+    $readmeSrc  = Test-Path (Join-Path $root 'src\README.md')
+    Assert-True -Condition $readmeRoot           -TestName 'init-lib (bash) creates root README.md'    -Details 'README.md present at root'
+    Assert-True -Condition (-not $readmeSrc)     -TestName 'init-lib (bash) no src README.md'          -Details 'README.md must not exist under src'
     Write-Message ($(if ($okInit) { '[SUCCESS] init-lib' } else { '[FAIL] init-lib' }))
 
     Write-Message '[TEST] Testing build'
@@ -353,6 +365,10 @@ function Invoke-SuiteBashMin {
     Initialize-GitRepo -RepoRoot $root
     $okInit = Test-Path $csproj
     Assert-True -Condition $okInit -TestName 'init-min (bash) creates project' -Details "$csproj exists"
+    $readmeRoot = Test-Path (Join-Path $root 'README.md')
+    $readmeSrc  = Test-Path (Join-Path $root 'src\README.md')
+    Assert-True -Condition $readmeRoot           -TestName 'init-min (bash) creates root README.md'    -Details 'README.md present at root'
+    Assert-True -Condition (-not $readmeSrc)     -TestName 'init-min (bash) no src README.md'          -Details 'README.md must not exist under src'
     Write-Message ($(if ($okInit) { '[SUCCESS] init-min' } else { '[FAIL] init-min' }))
 
     Write-Message '[TEST] Testing build'
