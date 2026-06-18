@@ -223,13 +223,21 @@ Set-Content -Path $csprojPath -Value $projRendered -Encoding UTF8
 Log '[INFO] Project file created'
 
 # Generate solution file from template with new project GUID
-$solutionGuid = [Guid]::NewGuid().ToString().ToUpper()
+$solutionGuid  = [Guid]::NewGuid().ToString().ToUpper()
+$testsGuid     = [Guid]::NewGuid().ToString().ToUpper()
+$testsProjName = "$Project.Tests"
 $slnTemplate = (Get-Content -LiteralPath $tplSln -Raw)
 $slnRendered = $slnTemplate.Replace('__PROJECT_NAME__', $Project).Replace('__PROJECT_GUID__', $solutionGuid).Replace('__SOLUTION_NAME__', $Solution)
 # For init-lib, the project lives directly under src (no subfolder). Adjust the relative path in the solution.
 $oldRelPath = "$Project\$Project.csproj"
 $newRelPath = "$Project.csproj"
 if ($slnRendered.Contains($oldRelPath)) { $slnRendered = $slnRendered.Replace($oldRelPath, $newRelPath) }
+# Inject test project entry into solution
+$nl = if ($slnRendered -match '\r\n') { "`r`n" } else { "`n" }
+$testProjEntry   = "Project(`"{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}`") = `"$testsProjName`", `"..\tests\$testsProjName.csproj`", `"{$testsGuid}`"${nl}EndProject"
+$testConfigEntry = "`t`t{$testsGuid}.Debug|Any CPU.ActiveCfg = Debug|Any CPU${nl}`t`t{$testsGuid}.Debug|Any CPU.Build.0 = Debug|Any CPU${nl}`t`t{$testsGuid}.Release|Any CPU.ActiveCfg = Release|Any CPU${nl}`t`t{$testsGuid}.Release|Any CPU.Build.0 = Release|Any CPU"
+$slnRendered = $slnRendered.Replace("EndProject${nl}Global", "EndProject${nl}$testProjEntry${nl}Global")
+$slnRendered = $slnRendered.Replace("{$solutionGuid}.Release|Any CPU.Build.0 = Release|Any CPU", "{$solutionGuid}.Release|Any CPU.Build.0 = Release|Any CPU${nl}$testConfigEntry")
 Set-Content -Path (Join-Path $srcDir "$Solution.sln") -Value $slnRendered -Encoding UTF8
 Log '[INFO] Solution file created'
 

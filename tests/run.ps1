@@ -168,6 +168,11 @@ function Invoke-SuiteCmdLib {
     $readmeSrc  = Test-Path (Join-Path $root 'src\README.md')
     Assert-True -Condition $readmeRoot           -TestName 'init-lib creates root README.md'    -Details 'README.md present at root'
     Assert-True -Condition (-not $readmeSrc)     -TestName 'init-lib no src README.md'          -Details 'README.md must not exist under src'
+    $testsCsproj = Test-Path (Join-Path $root "tests\$name.Tests.csproj")
+    $slnContent  = Get-Content -Path (Join-Path $root "src\$name.sln") -Raw -ErrorAction SilentlyContinue
+    $slnHasTests = $slnContent -and $slnContent.Contains("$name.Tests")
+    Assert-True -Condition $testsCsproj  -TestName 'init-lib creates tests csproj'          -Details "tests/$name.Tests.csproj exists"
+    Assert-True -Condition $slnHasTests  -TestName 'init-lib adds test project to solution' -Details "$name.Tests referenced in $name.sln"
     Write-Message ($(if ($okInit) { '[SUCCESS] init-lib' } else { '[FAIL] init-lib' }))
 
     # build (target src so solution is found)
@@ -242,6 +247,10 @@ function Invoke-SuiteCmdMin {
     $readmeSrc  = Test-Path (Join-Path $root 'src\README.md')
     Assert-True -Condition $readmeRoot           -TestName 'init-min creates root README.md'    -Details 'README.md present at root'
     Assert-True -Condition (-not $readmeSrc)     -TestName 'init-min no src README.md'          -Details 'README.md must not exist under src'
+    $testsGitkeep    = Test-Path (Join-Path $root "tests\.gitkeep")
+    $testsNoCsproj   = -not (Test-Path (Join-Path $root "tests\$name.Tests.csproj"))
+    Assert-True -Condition $testsGitkeep   -TestName 'init-min creates tests gitkeep'  -Details 'tests/.gitkeep exists'
+    Assert-True -Condition $testsNoCsproj  -TestName 'init-min no tests csproj'        -Details 'tests/<proj>.Tests.csproj must not exist'
     Write-Message ($(if ($okInit) { '[SUCCESS] init-min' } else { '[FAIL] init-min' }))
 
     Write-Message '[TEST] Testing build'
@@ -308,6 +317,11 @@ function Invoke-SuiteBashLib {
     $readmeSrc  = Test-Path (Join-Path $root 'src\README.md')
     Assert-True -Condition $readmeRoot           -TestName 'init-lib (bash) creates root README.md'    -Details 'README.md present at root'
     Assert-True -Condition (-not $readmeSrc)     -TestName 'init-lib (bash) no src README.md'          -Details 'README.md must not exist under src'
+    $testsCsproj = Test-Path (Join-Path $root "tests\$name.Tests.csproj")
+    $slnContent  = Get-Content -Path (Join-Path $root "src\$name.sln") -Raw -ErrorAction SilentlyContinue
+    $slnHasTests = $slnContent -and $slnContent.Contains("$name.Tests")
+    Assert-True -Condition $testsCsproj  -TestName 'init-lib (bash) creates tests csproj'          -Details "tests/$name.Tests.csproj exists"
+    Assert-True -Condition $slnHasTests  -TestName 'init-lib (bash) adds test project to solution' -Details "$name.Tests referenced in $name.sln"
     Write-Message ($(if ($okInit) { '[SUCCESS] init-lib' } else { '[FAIL] init-lib' }))
 
     Write-Message '[TEST] Testing build'
@@ -369,6 +383,10 @@ function Invoke-SuiteBashMin {
     $readmeSrc  = Test-Path (Join-Path $root 'src\README.md')
     Assert-True -Condition $readmeRoot           -TestName 'init-min (bash) creates root README.md'    -Details 'README.md present at root'
     Assert-True -Condition (-not $readmeSrc)     -TestName 'init-min (bash) no src README.md'          -Details 'README.md must not exist under src'
+    $testsGitkeep    = Test-Path (Join-Path $root "tests\.gitkeep")
+    $testsNoCsproj   = -not (Test-Path (Join-Path $root "tests\$name.Tests.csproj"))
+    Assert-True -Condition $testsGitkeep   -TestName 'init-min (bash) creates tests gitkeep'  -Details 'tests/.gitkeep exists'
+    Assert-True -Condition $testsNoCsproj  -TestName 'init-min (bash) no tests csproj'        -Details 'tests/<proj>.Tests.csproj must not exist'
     Write-Message ($(if ($okInit) { '[SUCCESS] init-min' } else { '[FAIL] init-min' }))
 
     Write-Message '[TEST] Testing build'
