@@ -3,7 +3,7 @@
   Scaffold a new .NET library repository structure.
 .DESCRIPTION
   Creates a root folder (by name/path) with src, tests; generates .editorconfig, .gitignore,
-  .wakatime-project, LICENSE (MIT), README.md; creates solution + class library project with NuGet metadata.
+  .wakatime-project, LICENSE (Artur Rios Attribution License), README.md; creates solution + class library project with NuGet metadata.
 
 .USAGE
     dotnet-tools init-lib [--root <RootName|Path>] [--solution Name] [--project Name] [--author "Full Name"] \
@@ -94,7 +94,7 @@ else {
 }
 
 # Validate required properties in parameters JSON
-$requiredKeys = @('RootFolder', 'SolutionName', 'ProjectName', 'Author', 'Company', 'Description', 'PackageId', 'RepositoryUrl', 'PackageLicenseExpression', 'Version')
+$requiredKeys = @('RootFolder', 'SolutionName', 'ProjectName', 'Author', 'Company', 'Description', 'PackageId', 'RepositoryUrl', 'Version')
 $missing = @()
 foreach ($k in $requiredKeys) {
     $hasProp = $paramsJson.PSObject.Properties.Name -contains $k
@@ -186,7 +186,7 @@ Log '[STEP] 3/9 Validate templates'
 # Validate required template files
 $tplEditor = Join-Path $templateBase '.editorconfig.template'
 $tplGit = Join-Path $templateBase '.gitignore.template'
-$tplLicense = Join-Path $templateBase 'LICENSE.MIT.template'
+$tplLicense = Join-Path $templateBase 'LICENSE.template'
 $tplProj = Join-Path $templateBase 'project.nuget.csproj.template'
 $tplSln = Join-Path $templateBase 'solution.sln.template'
 $required = @($tplEditor, $tplGit, $tplLicense, $tplProj, $tplSln)
@@ -202,7 +202,7 @@ Log '[OK] Config files copied'
 # Render LICENSE from template
 $licenseContent = (Get-Content -LiteralPath $tplLicense -Raw)
 $year = (Get-Date).Year
-$licenseContent = $licenseContent.Replace('__YEAR__', [string]$year).Replace('__AUTHOR__', $Author)
+$licenseContent = $licenseContent.Replace('__YEAR__', [string]$year)
 Set-Content -Path (Join-Path $RootFull 'LICENSE') -Value $licenseContent -Encoding UTF8
 Log '[OK] LICENSE generated'
 

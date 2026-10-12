@@ -7,6 +7,5 @@
   "Description": "Core library for Artur Rios services.",
   "PackageId": "ArturRios.NewLibrary.Core",
   "RepositoryUrl": "https://github.com/artur-rios/NewLibrary",
-  "PackageLicenseExpression": "MIT",
   "Version": "0.1.0"
 }

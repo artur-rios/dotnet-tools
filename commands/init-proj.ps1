@@ -85,7 +85,7 @@ else {
     # Replace placeholder tokens with empty strings
     $content = $content.Replace('__PACKAGE_ID__', '').Replace('__VERSION__', '').Replace('__AUTHOR__', '').Replace('__DESCRIPTION__', '').Replace('__REPOSITORY_URL__', '').Replace('__COMPANY__', '')
     # Blank fixed metadata values that may remain
-    $tagsToBlank = @('PackageLicenseExpression', 'PackageReadmeFile', 'Authors', 'Company', 'Description', 'PackageId', 'Version', 'RepositoryUrl')
+    $tagsToBlank = @('PackageLicenseFile', 'PackageReadmeFile', 'Authors', 'Company', 'Description', 'PackageId', 'Version', 'RepositoryUrl')
     foreach ($tag in $tagsToBlank) {
         $content = [regex]::Replace($content, "<$tag>.*?</$tag>", "<$tag></$tag>", 'Singleline')
     }

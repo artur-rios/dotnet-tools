@@ -25,7 +25,7 @@ dotnet-tools/
 │  ├─ install.ps1
 │  └─ install.sh
 ├─ templates/              # Scaffolding templates used by init commands
-│  ├─ LICENSE.MIT.template
+│  ├─ LICENSE.template
 │  ├─ project.minimal.csproj.template
 │  ├─ project.nuget.csproj.template
 │  ├─ project.Tests.csproj.template
@@ -69,7 +69,7 @@ Examples:
 
 - `dotnet-tools init-min [--root <RootName|Path>] [--solution Name] [--project Name] [--author "Full Name"] [--description "Project description"] [--json path/to/params.json]`
 - Example: `dotnet-tools init-min --root MyLib --solution MyLib --project MyLib --author "Jane Doe" --description "High performance utilities"`
-- Behavior: Generates solution and a minimal `.csproj` (no NuGet metadata). Does not create a test project; adds `tests/.gitkeep` instead. Uses the same `.editorconfig`, `.gitignore`, MIT `LICENSE`, and README generation as `init`.
+- Behavior: Generates solution and a minimal `.csproj` (no NuGet metadata). Does not create a test project; adds `tests/.gitkeep` instead. Uses the same `.editorconfig`, `.gitignore`, `LICENSE` (Artur Rios Attribution License), and README generation as `init`.
 -- Scaffold a single project folder:
 
 - `dotnet-tools init-proj --name <ProjectName> [--min|--nuget]`
@@ -186,7 +186,7 @@ If `powershell.exe` is available (on WSL), the wrapper prefers it; otherwise it 
 - `clean`: Remove `bin/` and `obj/` under `src` or a specified path
 - `tag`: Create `v<Version>` git tag from `.csproj` and optionally push
 - `test`: Run tests in discovered test projects and generate HTML coverage report
-- `init-lib`: Scaffold a new library repo: creates root + `src/ docs/ tests/` folders, `.editorconfig`, `.gitignore`, `.wakatime-project`, `LICENSE` (MIT), `README.md`, solution and class library project with NuGet metadata (PackageId, Version, Authors, Description, License, RepositoryUrl, README).
+- `init-lib`: Scaffold a new library repo: creates root + `src/ docs/ tests/` folders, `.editorconfig`, `.gitignore`, `.wakatime-project`, `LICENSE` (Artur Rios Attribution License), `README.md`, solution and class library project with NuGet metadata (PackageId, Version, Authors, Description, License, RepositoryUrl, README).
 - `init-min`: Scaffold a minimal library repo: same folders and top-level files as `init`, but creates a minimal class library `.csproj` without any NuGet packaging metadata and does not create a test project (adds `tests/.gitkeep`).
 - `init-proj`: Scaffold a single project folder choosing between minimal (`--min` default) or NuGet template (`--nuget` blanks metadata values but keeps tags present).
 
@@ -275,7 +275,7 @@ Behavior and precedence:
 - Flags are optional. When a flag is not provided, values are read from `parameters/init-parameters.json` by default (or the file given via `--json`).
 - Do not mix `--json` with other flags. Provide either a JSON file or use flags; mixing them returns an error.
 - Root path must come from `--root` or JSON `RootFolder`. Positional arguments are not supported.
-- The script validates the parameters JSON exists and includes all required keys: `RootFolder`, `SolutionName`, `ProjectName`, `Author`, `Company`, `Description`, `PackageId`, `RepositoryUrl`, `PackageLicenseExpression`, `Version`.
+- The script validates the parameters JSON exists and includes all required keys: `RootFolder`, `SolutionName`, `ProjectName`, `Author`, `Company`, `Description`, `PackageId`, `RepositoryUrl`, `Version`.
 
 Generated structure:
 
@@ -284,7 +284,7 @@ Generated structure:
   .editorconfig
   .gitignore
   .wakatime-project
-  LICENSE        # MIT (current year + author)
+  LICENSE        # Artur Rios Attribution License (current year)
   README.md      # Header: solution name, body: description
   src/
     <Solution>.sln
@@ -295,11 +295,11 @@ Generated structure:
 ```
 
 NuGet metadata added to `<Project>.csproj`:
-`PackageId`, `Version`, `Authors`, `Company`, `Description`, `PackageLicenseExpression`, `RepositoryUrl` (if `git remote origin` available or provided), `PackageReadmeFile`.
+`PackageId`, `Version`, `Authors`, `Company`, `Description`, `PackageLicenseFile` (`LICENSE`, packed from the repo root), `RepositoryUrl` (if `git remote origin` available or provided), `PackageReadmeFile`.
 
 Templates:
 
-- `LICENSE` (MIT) is rendered from `templates/LICENSE.MIT.template` with current year and author.
+- `LICENSE` (Artur Rios Attribution License) is rendered from `templates/LICENSE.template` with the current year.
 - Solution is rendered from `templates/solution.sln.template`.
 - Project is rendered from either `templates/project.nuget.csproj.template` (NuGet metadata) or `templates/project.minimal.csproj.template` (minimal).
 - Test project (when applicable) is rendered from `templates/project.Tests.csproj.template`.
@@ -318,9 +318,9 @@ dotnet-tools init-min [--root <RootName|Path>] [--solution Name] [--project Name
 Behavior and notes:
 
 - Uses the same parameter resolution rules as `init-lib`. If `--json` is provided, do not mix it with flags. Only a minimal subset of JSON keys is required: `RootFolder`, `SolutionName`, `ProjectName`, `Author`, `Description`.
-- Generates: `.editorconfig`, `.gitignore`, `.wakatime-project`, `LICENSE` (MIT), `README.md`, `src/<Solution>.sln`, `src/<Project>.csproj` (minimal), `docs/.gitkeep`, `tests/.gitkeep`.
+- Generates: `.editorconfig`, `.gitignore`, `.wakatime-project`, `LICENSE` (Artur Rios Attribution License), `README.md`, `src/<Solution>.sln`, `src/<Project>.csproj` (minimal), `docs/.gitkeep`, `tests/.gitkeep`.
 - Templates used: `templates/solution.sln.template` and `templates/project.minimal.csproj.template`.
 
 ## Legal Details
 
-This project is licensed under the [MIT License](https://en.wikipedia.org/wiki/MIT_License). A copy of the license is available at [LICENSE](./LICENSE) in the repository.
+This project is licensed under the [Artur Rios Attribution License](./LICENSE). It is free and open source: you may view, use, fork, modify, and extend it, provided you credit the author, Artur Rios, with a link to [artur-rios.tech](https://artur-rios.tech) or [github.com/artur-rios](https://github.com/artur-rios).

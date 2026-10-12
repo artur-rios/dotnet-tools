@@ -3,7 +3,7 @@
   Scaffold a minimal .NET library repository (no NuGet metadata, no test project).
 .DESCRIPTION
   Creates a root folder (by name/path) with src, tests; generates .editorconfig, .gitignore,
-  .wakatime-project, LICENSE (MIT), README.md; creates solution + minimal class library project
+  .wakatime-project, LICENSE (Artur Rios Attribution License), README.md; creates solution + minimal class library project
   with no NuGet packaging metadata. Tests folder contains only a .gitkeep.
 
 .USAGE
@@ -158,7 +158,7 @@ Log '[STEP] 4/7 Validate templates'
 
 $tplEditor = Join-Path $templateBase '.editorconfig.template'
 $tplGit = Join-Path $templateBase '.gitignore.template'
-$tplLicense = Join-Path $templateBase 'LICENSE.MIT.template'
+$tplLicense = Join-Path $templateBase 'LICENSE.template'
 $tplProjMin = Join-Path $templateBase 'project.minimal.csproj.template'
 $tplSln = Join-Path $templateBase 'solution.sln.template'
 $required = @($tplEditor, $tplGit, $tplLicense, $tplProjMin, $tplSln)
@@ -174,7 +174,7 @@ Log '[OK] Config files copied'
 # Render LICENSE from template
 $licenseContent = (Get-Content -LiteralPath $tplLicense -Raw)
 $year = (Get-Date).Year
-$licenseContent = $licenseContent.Replace('__YEAR__', [string]$year).Replace('__AUTHOR__', $Author)
+$licenseContent = $licenseContent.Replace('__YEAR__', [string]$year)
 Set-Content -Path (Join-Path $RootFull 'LICENSE') -Value $licenseContent -Encoding UTF8
 Log '[OK] LICENSE generated'
 
