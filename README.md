@@ -1,5 +1,11 @@
 # Dotnet Tools
 
+> [!NOTE]
+> This is the real, open-source code of dotnet-tools. Its home is Forgejo, at
+> https://git.techcraftsmen.net/artur-rios/dotnet-tools; the copy on GitHub is a read-only mirror, for viewing only, and
+> its issues and pull requests are not followed. If you want to contribute, email me at
+> arturdev@duck.com.
+
 Unified cross-shell wrappers to run common .NET repo tasks from PowerShell, CMD, or Bash using a single entrypoint: `dotnet-tools`.
 
 These thin wrappers dispatch to PowerShell command scripts that live alongside them, so you get a consistent CLI across shells for build, test (with coverage), version bump, clean, and tag.
