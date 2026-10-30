@@ -1,11 +1,5 @@
 # Dotnet Tools
 
-> [!NOTE]
-> This is the real, open-source code of dotnet-tools. Its home is Forgejo, at
-> https://git.techcraftsmen.net/artur-rios/dotnet-tools; the copy on GitHub is a read-only mirror, for viewing only, and
-> its issues and pull requests are not followed. If you want to contribute, email me at
-> arturdev@duck.com.
-
 Unified cross-shell wrappers to run common .NET repo tasks from PowerShell, CMD, or Bash using a single entrypoint: `dotnet-tools`.
 
 These thin wrappers dispatch to PowerShell command scripts that live alongside them, so you get a consistent CLI across shells for build, test (with coverage), version bump, clean, and tag.
@@ -326,6 +320,11 @@ Behavior and notes:
 - Uses the same parameter resolution rules as `init-lib`. If `--json` is provided, do not mix it with flags. Only a minimal subset of JSON keys is required: `RootFolder`, `SolutionName`, `ProjectName`, `Author`, `Description`.
 - Generates: `.editorconfig`, `.gitignore`, `.wakatime-project`, `LICENSE` (Artur Rios Attribution License), `README.md`, `src/<Solution>.sln`, `src/<Project>.csproj` (minimal), `docs/.gitkeep`, `tests/.gitkeep`.
 - Templates used: `templates/solution.sln.template` and `templates/project.minimal.csproj.template`.
+
+## Contributing
+
+The GitHub repository is a read-only mirror for the real, open-source code of dotnet-tools. Its home is Forgejo, at
+https://git.techcraftsmen.net/artur-rios/dotnet-tools. If you want to contribute, e-mail me at arturdev@duck.com.
 
 ## Legal Details
 
