@@ -21,7 +21,7 @@ function Resolve-TargetDir([string[]]$argv) {
     if (-not (Test-Path $candidate -PathType Container)) {
         ErrorExit "No path argument provided and 'src' directory was not found in current working directory.
 Current working directory: '$(Get-Location)'
-Usage: dotnet-tools clean [<path-to-src>]" 
+Usage: dotnet-tools clean [<path-to-src>]"
     }
     return (Resolve-Path $candidate).Path
 }
@@ -45,7 +45,7 @@ Log "[INFO] Target path: '$target'"
 if (-not (Test-Path $target -PathType Container)) {
     ErrorExit "Target directory not found: '$target'.
 Usage: dotnet-tools clean [<path-to-src>]
-Hint: provide an explicit path or ensure ./src exists." 
+Hint: provide an explicit path or ensure ./src exists."
 }
 
 Log '[STEP] 2/3 Scan and remove bin/ and obj/ folders'
